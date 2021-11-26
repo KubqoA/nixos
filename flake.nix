@@ -9,7 +9,7 @@
 # License: Unlicense
 
 {
-  description = "Winter snow";
+  description = "Monorepo for system configs";
 
   inputs = {
     nixpkgs.url = "nixpkgs/nixos-unstable";
@@ -18,39 +18,41 @@
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
 
     nixos-hardware.url = "github:nixos/nixos-hardware";
-    nixos-hardware.inputs.nixpkgs.follows = "nixpkgs";
   };
 
   outputs = inputs @ { self, nixpkgs, ... }:
     let
       system = "x86_64-linux";
 
+      # Extended lib, with custom modifications living under ‹lib._›
       lib = import ./lib { inherit pkgs inputs; lib = nixpkgs.lib; };
 
-      mkPkgs = pkgs: overlays: import pkgs {
+      mkPkgs = pkgs: import pkgs {
         inherit system;
         config.allowUnfree = true;
-        overlays = overlays ++ (lib.attrValues self.overlays);
+        overlays = lib.attrValues self.overlays;
       };
 
-      pkgs = mkPkgs nixpkgs [ self.overlay ];
+      pkgs = mkPkgs nixpkgs;
 
-      inherit (lib._) mapModules mapModulesRec mkHost;
+      inherit (lib._) mapModules mapModulesRec mkHost mkPackage;
     in {
-      packages."${system}" = mapModules ./packages (p: pkgs.callPackage p {});
+      packages."${system}" = mapModules ./packages mkPackage;
 
       # This overlay binds packages defined above available via ‹pkgs._›
-      overlay = final: prev: {
+      overlays.default = final: prev: {
         _ = self.packages."${system}";
       };
-
-      overlays = mapModules ./overlays import;
 
       nixosModules = mapModulesRec ./modules import;
 
       nixosConfigurations = mapModules ./hosts (mkHost system);
 
-      devShell."${system}" =
-        import ./shell.nix { inherit pkgs; };
+      devShells."${system}".default = pkgs.mkShell {
+        buildInputs = with pkgs; [
+          nix
+          git
+        ];
+      };
     };
 }

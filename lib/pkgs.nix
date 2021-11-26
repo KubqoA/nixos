@@ -17,4 +17,6 @@ in rec {
   buildBinScript = _buildBinScript [];
 
   buildBabashkaBinScript = _buildBinScript [ pkgs.babashka ];
+
+  mkPackage = p: pkgs.callPackage p {};
 }

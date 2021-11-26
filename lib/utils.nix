@@ -4,19 +4,19 @@ let
   inherit (builtins) attrValues readFile;
   inherit (lib) concatStringsSep filterAttrs fold isAttrs mapAttrs' mkOption types;
 in rec {
-  /* Map over ‹attrs› with ‹f› and then filter them using ‹pred›
+  /* Map over ‹attrs› with ‹mapF› and then filter them using ‹pred›
 
      Type:
        mapFilterAttrs ::
-         (String -> a -> Bool) -> (String -> b -> AttrSet) -> AttrSet' -> AttrSet
+         (String -> b -> AttrSet) -> (String -> a -> Bool) -> AttrSet' -> AttrSet
        where AttrSet' has a value of type ‹b› and AttrSet of type ‹a›
 
      Example:
-       mapFilterAttrs (n: v: n == "foo" || v == "bar") (n: v: nameValuePair n v)
+       mapFilterAttrs (n: v: nameValuePair n v) (n: v: n == "foo" || v == "bar")
                       { foo = "baz"; a = "bar"; b = "foo" };
        => { foo = "baz"; a = "bar"; }
   */
-  mapFilterAttrs = pred: f: attrs: filterAttrs pred (mapAttrs' f attrs);
+  mapFilterAttrs = mapF: pred: attrs: filterAttrs pred (mapAttrs' mapF attrs);
 
   /* Recursively generates a list of values of ‹attr› even for nested attrs
 
@@ -65,9 +65,7 @@ in rec {
   */
   configWithExtras = path: extras: "${readFile path}\n${extras}";
 
-  enable = { enable = true; };
-
-  /* A simplifiation for creating options
+  /* A shorthand for creating options
      
      Example:
        mkOpt types.str "foobar" "A very important option"
