@@ -96,7 +96,7 @@
     };
   
     # Notifications
-    hm.programs.mako = {
+    hm.services.mako = {
       enable = true;
       anchor = "bottom-right";
       layer = "overlay";
@@ -187,8 +187,11 @@
           tooltip-format-wifi = "{essid} ({signalStrength}%)";
           tooltip-format-ethernet = "";
           tooltip-format-disconnected = "Disconnected";
-          max-length = 5;
+          max-length = 11;
         };
+	mpris = {
+	  ignored-players = [ "firefox" ];
+	};
       };
 
       style = ''
@@ -272,6 +275,7 @@ tooltip label {
     };
   
     # Swaylock
+    hm.programs.swaylock.enable = true;
     hm.programs.swaylock.settings = let transparent="#00000000"; in {
       indicator-radius = 60;
       indicator-thickness = 5;
@@ -342,21 +346,22 @@ tooltip label {
           scroll_method = "two_finger";
         };
         keybindings = let
+	  audioSupport = config.hw.audio.enable;
           mod = "Mod4";
           processScreenshot = ''wl-copy -t image/png && notify-send "Screenshot taken"'';
         in lib.mkOptionDefault {
           # Lock
           "Mod1+l" = "exec swaylock";
           ## Control volume
-          #XF86AudioRaiseVolume = mkIf audioSupport "exec pactl set-sink-volume @DEFAULT_SINK@ +10%";
-          #XF86AudioLowerVolume = mkIf audioSupport "exec pactl set-sink-volume @DEFAULT_SINK@ -10%";
-          #XF86AudioMute = mkIf audioSupport "exec pactl set-sink-mute @DEFAULT_SINK@ toggle";
-          #XF86AudioMicMute = mkIf audioSupport "exec pactl set-source-mute @DEFAULT_SOURCE@ toggle";
+          XF86AudioRaiseVolume = lib.mkIf audioSupport "exec wpctl set-volume -l 1.0 @DEFAULT_SINK@ 5%+";
+          XF86AudioLowerVolume = lib.mkIf audioSupport "exec wpctl set-volume @DEFAULT_SINK@ 5%-";
+          XF86AudioMute = lib.mkIf audioSupport "exec wpctl set-mute @DEFAULT_SINK@ toggle";
+          XF86AudioMicMute = lib.mkIf audioSupport "exec pactl set-source-mute @DEFAULT_SOURCE@ toggle";
           ## Control media
-          #XF86AudioPlay = mkIf audioSupport "exec playerctl play-pause";
-          #XF86AudioPause = mkIf audioSupport "exec playerctl play-pause";
-          #XF86AudioNext = mkIf audioSupport "exec playerctl next";
-          #XF86AudioPrev = mkIf audioSupport "exec playerctl previous";
+          XF86AudioPlay = lib.mkIf audioSupport "exec playerctl play-pause";
+          XF86AudioPause = lib.mkIf audioSupport "exec playerctl play-pause";
+          XF86AudioNext = lib.mkIf audioSupport "exec playerctl next";
+          XF86AudioPrev = lib.mkIf audioSupport "exec playerctl previous";
           # Control brightness
           XF86MonBrightnessUp = "exec light -A 10";
           XF86MonBrightnessDown = "exec light -U 10";

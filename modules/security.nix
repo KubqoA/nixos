@@ -8,8 +8,8 @@
   security.protectKernelImage = true;
 
   # tmpfs = /tmp is mounted in ram.
-  boot.tmpOnTmpfs = lib.mkDefault true;
-  boot.cleanTmpDir = lib.mkDefault (!config.boot.tmpOnTmpfs);
+  boot.tmp.useTmpfs = lib.mkDefault true;
+  boot.tmp.cleanOnBoot = lib.mkDefault (!config.boot.tmpOnTmpfs);
 
   # https://github.com/NixOS/nixpkgs/blob/master/nixos/modules/system/boot/loader/systemd-boot/systemd-boot.nix#L66
   boot.loader.systemd-boot.editor = false;

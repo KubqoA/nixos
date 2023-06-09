@@ -7,6 +7,7 @@ with lib;
   };
 
   config = mkIf config.shell.zsh.enable {
+    programs.zsh.enable = true;
     user.shell = pkgs.zsh;
     hm.xdg.configFile."art".source = ./art;
     hm.programs.zsh = {
