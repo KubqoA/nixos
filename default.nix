@@ -12,11 +12,11 @@ in {
   };
 
   environment.systemPackages = with pkgs; [
-    curl git wget neovim
+    curl git wget neovim efibootmgr
   ];
 
   i18n.defaultLocale = "en_US.UTF-8";
   
-  system.stateVersion = lib.mkDefault "22.11";
-  hm.home.stateVersion = lib.mkDefault "22.11";
+  system.stateVersion = lib.mkDefault "23.05";
+  hm.home.stateVersion = lib.mkDefault "23.05";
 }

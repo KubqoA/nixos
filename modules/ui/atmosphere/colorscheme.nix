@@ -6,6 +6,13 @@ with lib;
     ui.colorscheme.dark = with _.colors; {
       bg = ./dark/bg.jpg;
       lockBg = ./dark/lock.jpg;
+      lock = {
+        ring = trueGray._300;
+	ringVer = trueGray._400;
+	ringWrong = red._400;
+	keyHl = emerald._500;
+	bsHl = orange._500;
+      };
       bar = {
         inactive = trueGray._500;
         normal = trueGray._50;
@@ -91,9 +98,16 @@ with lib;
       };
     };
 
-    ui.colorscheme.light = with _.colors; mkDefault {
+    ui.colorscheme.light = with _.colors; {
       bg = ./light/bg.jpg;
       lockBg = ./light/lock.jpg;
+      lock = {
+        ring = trueGray._300;
+	ringVer = trueGray._400;
+	ringWrong = red._400;
+	keyHl = emerald._500;
+	bsHl = orange._500;
+      };
       bar = {
         inactive = trueGray._300;
         normal = trueGray._50;

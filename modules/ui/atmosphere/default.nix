@@ -17,16 +17,27 @@
 
 {
   config = lib.mkIf (config.ui.theme == "atmosphere") (let
+    colorscheme' = "dark";
     # TODO: Work on the light/dark mode switch
-    colorscheme = config.ui.colorscheme.light;
+    colorscheme = config.ui.colorscheme.${colorscheme'};
   in {
     hm.home.packages = with pkgs; [
       (pass.withExtensions (exts: with exts; [exts.pass-otp exts.pass-genphrase]))
       grim slurp libnotify
       firefox-wayland
       wl-clipboard
-      swayidle swaylock bemenu
+      swaylock bemenu
+      playerctl
     ];
+
+    hm.programs.rofi = {
+      enable = true;
+      package = pkgs.rofi-wayland;
+      pass = {
+        enable = true;
+	stores = [ config.home-manager.users.${config.username}.home.sessionVariables.PASSWORD_STORE_DIR ];
+      };
+    };
 
     # Terminal
     hm.programs.foot = {
@@ -62,8 +73,7 @@
       };
     };
 
-    # UI
-    # Kanshi
+    # Kanshi - display management
     hm.services.kanshi = {
       enable = true;
       profiles.default.outputs = [{
@@ -73,14 +83,14 @@
       }];
       profiles.work.outputs = [
         {
-          criteria = "DP-1";
+          criteria = "DP-5";
           mode = "2560x1440";
           position = "0,0";
         }
         {
           criteria = "eDP-1";
           mode = "1920x1080";
-          position = "320,1440";
+          position = "2560,180";
         }
       ];
     };
@@ -91,7 +101,7 @@
       anchor = "bottom-right";
       layer = "overlay";
       font = "Inter 12";
-      format = "<span font_family=\"MADE Outer Sans\" font_weight=\"500\" line_height=\"1.4\">%s</span>\n%b";
+      format = "<span font_family=\"MADE Outer Sans\" font_weight=\"500\" line_height=\"1.4\">%s</span>\\n%b";
       padding = "14,14";
       margin = "10,10,0,0";
       backgroundColor = "#${colorscheme.notification.normal.bg}";
@@ -105,6 +115,16 @@
         background-color=#${colorscheme.notification.critical.bg}
         text-color=#${colorscheme.notification.critical.fg}
       '';
+    };
+
+    # Swayidle
+    hm.services.swayidle = {
+      enable = true;
+      events = [ { event = "before-sleep"; command = "${pkgs.swaylock}/bin/swaylock -f"; } ];
+      timeouts = [
+        { timeout = 300; command = "'swaymsg \"output * dpms off\"'"; }
+        { timeout = 360; command = "'${pkgs.swaylock}/bin/swaylock -f'"; resumeCommand = "'swaymsg \"output * dpms on\"'"; }
+      ];
     };
   
     # Night mode
@@ -158,7 +178,7 @@
         };
         network = {
           interface = "wlan0";
-          format-icons = [ "" "" "" "" ];
+          format-icons = if colorscheme' == "dark" then [ "" "" "" "" ] else [ "" "" "" "" ];
           format = "";
           format-wifi = "{icon}";
           format-ethernet = "ethernet";
@@ -251,6 +271,37 @@ tooltip label {
       '';
     };
   
+    # Swaylock
+    hm.programs.swaylock.settings = let transparent="#00000000"; in {
+      indicator-radius = 60;
+      indicator-thickness = 5;
+      indicator-x-position = 1780;
+      indicator-y-position = 945;
+      hide-keyboard-layout = true;
+      image = "${colorscheme.lockBg}";
+      ring-color = colorscheme.lock.ring;
+      ring-clear-color = colorscheme.lock.ring;
+      ring-ver-color = colorscheme.lock.ringVer;
+      ring-wrong-color = colorscheme.lock.ringWrong;
+      key-hl-color= colorscheme.lock.keyHl;
+      bs-hl-color= colorscheme.lock.bsHl;
+      text-color = transparent;
+      text-clear-color = transparent;
+      text-caps-lock-color = transparent;
+      text-ver-color = transparent;
+      text-wrong-color = transparent;
+      line-color = transparent;
+      line-clear-color = transparent;
+      line-caps-lock-color = transparent;
+      line-ver-color = transparent;
+      line-wrong-color = transparent;
+      inside-color = transparent;
+      inside-clear-color = transparent;
+      inside-ver-color = transparent;
+      inside-wrong-color = transparent;
+      separator-color = transparent;
+    };
+
     # Sway
     security.polkit.enable = true;
     security.pam.services.swaylock = {};
@@ -295,7 +346,7 @@ tooltip label {
           processScreenshot = ''wl-copy -t image/png && notify-send "Screenshot taken"'';
         in lib.mkOptionDefault {
           # Lock
-          "Mod1+l" = "exec lock";
+          "Mod1+l" = "exec swaylock";
           ## Control volume
           #XF86AudioRaiseVolume = mkIf audioSupport "exec pactl set-sink-volume @DEFAULT_SINK@ +10%";
           #XF86AudioLowerVolume = mkIf audioSupport "exec pactl set-sink-volume @DEFAULT_SINK@ -10%";

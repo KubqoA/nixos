@@ -14,7 +14,8 @@ with lib;
       enableCompletion = true;
       enableAutosuggestions = true;
       shellAliases = {
-        windows = "sudo efibootmgr -n 0012 && reboot";
+        windows = "doas efibootmgr -n 0000 && reboot";
+        lreboot = "doas efibootmgr -n 0001 && reboot";
         sysu = "systemctl --user";
         ls = "ls --color=auto -F";
         chx = "chmod +x";
