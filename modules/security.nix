@@ -9,7 +9,7 @@
 
   # tmpfs = /tmp is mounted in ram.
   boot.tmp.useTmpfs = lib.mkDefault true;
-  boot.tmp.cleanOnBoot = lib.mkDefault (!config.boot.tmpOnTmpfs);
+  boot.tmp.cleanOnBoot = lib.mkDefault (!config.boot.tmp.useTmpfs);
 
   # https://github.com/NixOS/nixpkgs/blob/master/nixos/modules/system/boot/loader/systemd-boot/systemd-boot.nix#L66
   boot.loader.systemd-boot.editor = false;

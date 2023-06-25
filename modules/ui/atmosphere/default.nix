@@ -279,8 +279,6 @@ tooltip label {
     hm.programs.swaylock.settings = let transparent="#00000000"; in {
       indicator-radius = 60;
       indicator-thickness = 5;
-      indicator-x-position = 1780;
-      indicator-y-position = 945;
       hide-keyboard-layout = true;
       image = "${colorscheme.lockBg}";
       ring-color = colorscheme.lock.ring;
