@@ -14,7 +14,7 @@ in {
   system.activationScripts.increment-and-sign-zone.text =
     builtins.replaceStrings
     ["cmp" "dnssec-keygen" "dnssec-signzone" "named-checkzone" "sed" "./jakubarbet.me.conf"]
-    ["${pkgs.diffutils}/bin/cmp" "${pkgs.bind}/bin/dnssec-signzone" "${pkgs.bind}/bin/dnssec-keygen" "${pkgs.bind}/bin/named-checkzone" "${pkgs.gnused}/bin/sed" "${./jakubarbet.me.conf}"]
+    ["${pkgs.diffutils}/bin/cmp" "${pkgs.bind}/bin/dnssec-keygen" "${pkgs.bind}/bin/dnssec-signzone" "${pkgs.bind}/bin/named-checkzone" "${pkgs.gnused}/bin/sed" "${./jakubarbet.me.conf}"]
     (builtins.readFile ./increment-and-sign-zone.sh);
 
   # Used to define DNS records for jakubarbet.me domain and
