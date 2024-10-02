@@ -9,8 +9,6 @@ in {
     firewall.enable = true;
   };
 
-  services.resolved.enable = false;
-
   systemd.network = {
     enable = true;
     networks."10-wan" = {
