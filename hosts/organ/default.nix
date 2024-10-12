@@ -12,6 +12,7 @@
       ./mail.nix
       ./networking.nix
       ./nginx.nix
+      ./seafile.nix
       ./tailscale.nix
     ]
     ++ lib._.moduleImports [
